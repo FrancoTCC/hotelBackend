@@ -1,5 +1,6 @@
 package com.francode.hotelBackend.security.config;
 
+import java.util.Collections;
 import com.francode.hotelBackend.business.services.auth.UserDetailsServiceImpl;
 import com.francode.hotelBackend.security.custom.CustomAuthEntryPoint;
 import com.francode.hotelBackend.security.jwt.AuthTokenFilter;
