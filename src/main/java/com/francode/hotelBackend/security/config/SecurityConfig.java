@@ -59,27 +59,30 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(authEntryPoint)
-                )
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir preflight requests
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/ws/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+   @Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
     
-        return http.build();
-    }
+    // Configuración esencial para resolver el error CORS
+    configuration.setAllowedOriginPatterns(List.of("*"));  // Usar patterns en lugar de origins
+    configuration.setAllowedMethods(List.of(
+        "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
+    ));
+    configuration.setAllowedHeaders(List.of(
+        "Authorization", "Cache-Control", "Content-Type", "Origin", 
+        "Accept", "X-Requested-With", "Access-Control-Request-Method",
+        "Access-Control-Request-Headers"
+    ));
+    configuration.setExposedHeaders(List.of(
+        "Authorization", "Content-Type", "Content-Length"
+    ));
+    configuration.setAllowCredentials(false);  // IMPORTANTE: false con wildcard (*)
+    configuration.setMaxAge(3600L);  // Cache de 1 hora para preflight
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
