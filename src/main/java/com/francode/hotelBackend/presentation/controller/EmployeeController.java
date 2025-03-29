@@ -31,7 +31,7 @@ public class EmployeeController {
         return ResponseEntity.status(201).body(employeeResponseDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLEANER')")
     @GetMapping("/employee/{id}")
     public ResponseEntity<EmployeeResponseDTO> findById(@PathVariable Long id) {
         Optional<EmployeeResponseDTO> employeeResponseDTO = employeeService.findById(id);
