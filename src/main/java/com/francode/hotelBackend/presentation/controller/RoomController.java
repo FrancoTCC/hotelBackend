@@ -35,7 +35,7 @@ public class RoomController {
         return ResponseEntity.status(201).body(roomResponseDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLEANER')")
     @GetMapping("/room/{id}")
     public ResponseEntity<RoomResponseDTO> findById(@PathVariable Long id) {
         Optional<RoomResponseDTO> roomResponseDTO = roomService.findById(id);
