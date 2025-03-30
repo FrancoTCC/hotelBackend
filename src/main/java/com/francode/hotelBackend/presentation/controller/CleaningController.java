@@ -68,8 +68,11 @@ public class CleaningController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLEANER')")
     @GetMapping("/employee/{employeeId}")
     public ResponseEntity<Page<CleaningResponseDTO>> getCleaningsByEmployeeId(
-            @PathVariable Long employeeId, Pageable pageable) {
-        Page<CleaningResponseDTO> cleaningResponseDTOs = cleaningService.getCleaningsByEmployeeId(employeeId, pageable);
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) String field,
+            @RequestParam(required = false) String value,
+            Pageable pageable) {
+        Page<CleaningResponseDTO> cleaningResponseDTOs = cleaningService.getCleaningsByEmployeeId(employeeId, field, value, pageable);
         return ResponseEntity.ok(cleaningResponseDTOs);
     }
 

@@ -24,5 +24,5 @@ public interface CleaningService {
 
     CleaningResponseDTO updateCleaningStatus(Long cleaningId, UpdateCleaningStatusDTO updateCleaningStatus);
 
-    Page<CleaningResponseDTO> getCleaningsByEmployeeId(Long employeeId, Pageable pageable);
+    Page<CleaningResponseDTO> getCleaningsByEmployeeId(Long employeeId, String field, String value, Pageable pageable);
 }

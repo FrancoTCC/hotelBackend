@@ -145,12 +145,31 @@ public class CleaningServiceImpl implements CleaningService {
     }
 
     @Override
-    public Page<CleaningResponseDTO> getCleaningsByEmployeeId(Long employeeId, Pageable pageable) {
+    public Page<CleaningResponseDTO> getCleaningsByEmployeeId(Long employeeId, String field, String value, Pageable pageable) {
         if (employeeId == null) {
             throw new ValidationException("El ID del empleado no puede ser nulo.");
         }
 
-        Page<Cleaning> cleanings = cleaningRepository.findByEmployeeId(employeeId, pageable);
+        if ((field != null && value == null) || (field == null && value != null)) {
+            throw new ValidationException("Ambos, campo y valor, deben proporcionarse para la búsqueda.");
+        }
+
+        Specification<Cleaning> spec = Specification.where((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("employeeId"), employeeId)
+        );
+
+        if (field != null && value != null && !field.isEmpty() && !value.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> {
+                Path<String> fieldPath = root.get(field);
+                return criteriaBuilder.like(criteriaBuilder.lower(fieldPath), "%" + value.toLowerCase() + "%");
+            });
+        }
+        Page<Cleaning> cleanings = cleaningRepository.findAll(spec, pageable);
+
+        if (cleanings.isEmpty()) {
+            throw new NoRecordsException("No se encontraron registros de limpiezas.");
+        }
+
         return cleanings.map(cleaningMapper::toResponseDTO);
     }
 
