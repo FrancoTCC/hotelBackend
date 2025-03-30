@@ -154,8 +154,9 @@ public class CleaningServiceImpl implements CleaningService {
             throw new ValidationException("Ambos, campo y valor, deben proporcionarse para la búsqueda.");
         }
 
+
         Specification<Cleaning> spec = Specification.where((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("employeeId"), employeeId)
+                criteriaBuilder.equal(root.get("employee").get("id"), employeeId)  // Usamos "employee.id" si es una relación
         );
 
         if (field != null && value != null && !field.isEmpty() && !value.isEmpty()) {
@@ -164,6 +165,7 @@ public class CleaningServiceImpl implements CleaningService {
                 return criteriaBuilder.like(criteriaBuilder.lower(fieldPath), "%" + value.toLowerCase() + "%");
             });
         }
+
         Page<Cleaning> cleanings = cleaningRepository.findAll(spec, pageable);
 
         if (cleanings.isEmpty()) {
@@ -172,6 +174,7 @@ public class CleaningServiceImpl implements CleaningService {
 
         return cleanings.map(cleaningMapper::toResponseDTO);
     }
+
 
     @Override
     public CleaningResponseDTO updateCleaningStatus(Long cleaningId, UpdateCleaningStatusDTO updateCleaningStatusDTO) {
