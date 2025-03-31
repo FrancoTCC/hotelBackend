@@ -209,6 +209,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new NotFoundException("No se encontró una habitación con el ID: " + roomId));
         roomRepository.updateRoomCleaningStatus(roomId, EStatusCleaningRoom.PARA_LIMPIAR);
-        webSocketService.sendRoomUpdate(room);
+        webSocketService.sendRoomStatusUpdate(roomId, EStatusCleaningRoom.PARA_LIMPIAR.name());
     }
 }
