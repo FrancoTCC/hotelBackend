@@ -60,29 +60,17 @@ public class SecurityConfig {
     }
 
    @Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    
-    // Configuración esencial para resolver el error CORS
-    configuration.setAllowedOriginPatterns(List.of("*"));  // Usar patterns en lugar de origins
-    configuration.setAllowedMethods(List.of(
-        "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
-    ));
-    configuration.setAllowedHeaders(List.of(
-        "Authorization", "Cache-Control", "Content-Type", "Origin", 
-        "Accept", "X-Requested-With", "Access-Control-Request-Method",
-        "Access-Control-Request-Headers"
-    ));
-    configuration.setExposedHeaders(List.of(
-        "Authorization", "Content-Type", "Content-Length"
-    ));
-    configuration.setAllowCredentials(false);  // IMPORTANTE: false con wildcard (*)
-    configuration.setMaxAge(3600L);  // Cache de 1 hora para preflight
-    
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos permitidos
+        configuration.setAllowedHeaders(List.of("*")); // Cabeceras permitidas
+        configuration.setAllowCredentials(true); // Permitir credenciales
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Aplicar a todos los endpoints
+        return source;
+    }
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
