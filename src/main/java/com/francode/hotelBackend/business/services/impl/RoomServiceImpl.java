@@ -204,4 +204,11 @@ public class RoomServiceImpl implements RoomService {
         return rooms.map(roomMapper::toResponseDTO);
     }
 
+    @Override
+    public void updateRoomCleaningStatus(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException("No se encontró una habitación con el ID: " + roomId));
+        roomRepository.updateRoomCleaningStatus(roomId, EStatusCleaningRoom.PARA_LIMPIAR);
+        webSocketService.sendRoomUpdate(room);
+    }
 }

@@ -1,6 +1,7 @@
 package com.francode.hotelBackend.business.services.interfaces;
 
 import com.francode.hotelBackend.business.services.Generic.CrudGenericService;
+import com.francode.hotelBackend.domain.entity.EStatusCleaningRoom;
 import com.francode.hotelBackend.domain.entity.Room;
 import com.francode.hotelBackend.presentation.dto.request.RoomRequestDTO;
 import com.francode.hotelBackend.presentation.dto.response.Reservation.ReservationInfoDTO;
@@ -22,4 +23,5 @@ public interface RoomService extends CrudGenericService<Room, RoomRequestDTO, Ro
     void updateRoomStatus(Long roomId, String status);
 
     Page<RoomResponseDTO> findRoomsWithCleaningStatus(Pageable pageable);
+    void updateRoomCleaningStatus(Long roomId);
 }

@@ -1,5 +1,6 @@
 package com.francode.hotelBackend.persistence.repository;
 
+import com.francode.hotelBackend.domain.entity.EStatusCleaningRoom;
 import com.francode.hotelBackend.domain.entity.Reservation;
 import com.francode.hotelBackend.domain.entity.Room;
 import jakarta.transaction.Transactional;
@@ -47,4 +48,10 @@ public interface JpaRoomRepository extends JpaRepository<Room, Long>, JpaSpecifi
 
     @Query("SELECT r FROM Room r WHERE r.statusCleaning IN ('PARA_LIMPIAR', 'LIMPIANDO')")
     Page<Room> findRoomsWithCleaningStatus(Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Room r SET r.statusCleaning = :statusCleaning WHERE r.id = :roomId")
+    void updateRoomCleaningStatus(Long roomId, EStatusCleaningRoom statusCleaning);
+
 }

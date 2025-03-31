@@ -101,4 +101,10 @@ public class RoomController {
         return ResponseEntity.ok(roomResponseDTOs);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/room/{id}/change-cleaning-status")
+    public ResponseEntity<Void> changeRoomCleaningStatus(@PathVariable Long id) {
+        roomService.updateRoomCleaningStatus(id);
+        return ResponseEntity.ok().build();
+    }
 }
