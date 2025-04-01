@@ -26,5 +26,9 @@ public interface ReservationMapper extends Mapper<ReservationRequestDTO, Reserva
     @Mapping(target = "room", ignore = true)
     void updateEntityFromDTO(ReservationRequestDTO dto, @MappingTarget Reservation entity);
 
+    @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "clientName", source = "client.name")
+    @Mapping(target = "roomId", source = "room.id")
+    @Mapping(target = "roomNumber", source = "room.number")
     List<ReservationInfoDTO> toReservationInfoDTOList(List<Reservation> reservations);
 }

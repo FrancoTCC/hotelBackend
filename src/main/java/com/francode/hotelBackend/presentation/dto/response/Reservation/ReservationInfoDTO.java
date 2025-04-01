@@ -15,4 +15,8 @@ public class ReservationInfoDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;
+    private Long clientId;
+    private String clientName;
+    private Long roomId;
+    private String roomNumber;
 }
