@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService {
@@ -182,8 +183,9 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("No se encontraron reservas futuras para la habitación con ID: " + roomId);
         }
 
-        // Usar el mapper para mapear las reservas a ReservationInfoDTO
-        return reservationMapper.toReservationInfoDTOList(reservations);
+        return reservations.stream()
+                .map(reservation -> reservationMapper.toReservationInfoDTO(reservation))
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -30,5 +30,5 @@ public interface ReservationMapper extends Mapper<ReservationRequestDTO, Reserva
     @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "roomId", source = "room.id")
     @Mapping(target = "roomNumber", source = "room.number")
-    List<ReservationInfoDTO> toReservationInfoDTOList(List<Reservation> reservations);
+    ReservationInfoDTO toReservationInfoDTO(Reservation reservation);
 }
