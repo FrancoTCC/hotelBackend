@@ -218,16 +218,17 @@ public class CleaningServiceImpl implements CleaningService {
         if (results.isEmpty()) {
             throw new NotFoundException("No se encontró ninguna limpieza en estado 'EN PROCESO' para la habitación con ID: " + roomId);
         }
-
-        // Si encuentras resultados, mapea el primer resultado al DTO
-        Object[] row = results.get(0); // Obtiene el primer resultado de la lista
+        Object[] row = results.get(0);
         Long cleaningId = (Long) row[0];
         LocalDateTime startDate = (LocalDateTime) row[1];
-        String status = (String) row[2];
+
+        // Aquí estamos manejando el enum 'status'
+        CleaningStatus statusEnum = (CleaningStatus) row[2];
+        String status = statusEnum.getDescripcion();
+
         Long employeeId = (Long) row[3];
         String employeeName = (String) row[4];
 
-        // Mapea los valores al DTO
         CleaningDetailsDTO cleaningDetailsDTO = new CleaningDetailsDTO(cleaningId, startDate, status, employeeId, employeeName);
 
         return Optional.of(cleaningDetailsDTO);
