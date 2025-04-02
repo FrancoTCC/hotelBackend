@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface JpaCleaningRepository extends JpaRepository<Cleaning, Long>, JpaSpecificationExecutor<Cleaning> {
     Page<Cleaning> findByEmployeeId(Long employeeId, Pageable pageable);
 
-    @Query("SELECT new com.francode.hotelBackend.dto.CleaningDetailsDTO(" +
+    @Query("SELECT new com.francode.hotelBackend.presentation.dto.response.CleaningDetailsDTO(" +
             "c.id, " +
             "c.startDate, " +
             "c.status, " +
