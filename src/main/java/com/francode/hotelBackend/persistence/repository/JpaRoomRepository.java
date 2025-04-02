@@ -6,6 +6,7 @@ import com.francode.hotelBackend.domain.entity.Room;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,7 +26,12 @@ public interface JpaRoomRepository extends JpaRepository<Room, Long>, JpaSpecifi
             "(res.endDate BETWEEN :startDate AND :endDate) OR " +
             "(res.startDate <= :startDate AND res.endDate >= :endDate) " +
             "AND (res.status != 'CANCELADA' AND res.status != 'NO_SE_PRESENTO'))")
-    Page<Room> findAvailableRoomsForDates(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Page<Room> findAvailableRoomsForDatesWithSpec(
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Specification<Room> spec,
+            Pageable pageable);
+
 
     // Verificar si la habitación tiene reservas en un rango de fechas
     @Query("SELECT CASE WHEN COUNT(res) > 0 THEN true ELSE false END " +

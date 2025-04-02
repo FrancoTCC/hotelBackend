@@ -14,7 +14,12 @@ import java.util.List;
 
 public interface RoomService extends CrudGenericService<Room, RoomRequestDTO, RoomResponseDTO, Long> {
     // Obtener todas las habitaciones que no tengan reservas en un rango de fechas determinado
-    Page<RoomResponseDTO> findAvailableRoomsForDates(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Page<RoomResponseDTO> findAvailableRoomsForDates(
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String field,
+            String value,
+            Pageable pageable);
 
     // Obtener una lista de reservas con fecha de inicio, fecha de fin y estado para una habitación
     List<ReservationInfoDTO> findReservationsInfoForRoom(Long roomId);
