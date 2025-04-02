@@ -156,8 +156,7 @@ public class RoomServiceImpl implements RoomService {
     public Page<RoomResponseDTO> findAvailableRoomsForDates(
             LocalDateTime startDate,
             LocalDateTime endDate,
-            String field,
-            String value,
+            Long roomTypeId,
             Pageable pageable) {
 
         // Validación de las fechas
@@ -165,19 +164,8 @@ public class RoomServiceImpl implements RoomService {
             throw new ValidationException("Las fechas de inicio y fin no pueden ser nulas.");
         }
 
-        // Crear la especificación base para la búsqueda
-        Specification<Room> spec = Specification.where(null);
-
-        // Agregar búsqueda dinámica por campo y valor si están presentes
-        if (field != null && value != null && !field.isEmpty() && !value.isEmpty()) {
-            spec = spec.and((root, query, criteriaBuilder) -> {
-                Path<String> fieldPath = root.get(field);
-                return criteriaBuilder.like(criteriaBuilder.lower(fieldPath), "%" + value.toLowerCase() + "%");
-            });
-        }
-
-        // Llamar al repositorio con la especificación combinada
-        Page<Room> rooms = roomRepository.findAvailableRoomsForDatesWithSpec(startDate, endDate, spec, pageable);
+        // Llamar al repositorio con el parámetro opcional de tipo de habitación
+        Page<Room> rooms = roomRepository.findAvailableRoomsForDatesWithRoomType(startDate, endDate, roomTypeId, pageable);
 
         // Verificar si no hay habitaciones disponibles
         if (rooms.isEmpty()) {
@@ -187,6 +175,8 @@ public class RoomServiceImpl implements RoomService {
         // Mapear las habitaciones a RoomResponseDTO y devolverlas
         return rooms.map(roomMapper::toResponseDTO);
     }
+
+
 
 
     @Override

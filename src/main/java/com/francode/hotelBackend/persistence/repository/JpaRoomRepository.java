@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -19,17 +20,18 @@ import java.util.List;
 @Repository
 public interface JpaRoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room> {
 
-    // Obtener todas las habitaciones que no tengan reservas en un rango de fechas determinado
+    // Consulta para obtener habitaciones disponibles en un rango de fechas con un filtro opcional por tipo de habitación
     @Query("SELECT r FROM Room r WHERE r.id NOT IN " +
             "(SELECT res.room.id FROM Reservation res WHERE " +
             "(res.startDate BETWEEN :startDate AND :endDate) OR " +
             "(res.endDate BETWEEN :startDate AND :endDate) OR " +
             "(res.startDate <= :startDate AND res.endDate >= :endDate) " +
-            "AND (res.status != 'CANCELADA' AND res.status != 'NO_SE_PRESENTO'))")
-    Page<Room> findAvailableRoomsForDatesWithSpec(
+            "AND (res.status != 'CANCELADA' AND res.status != 'NO_SE_PRESENTO')) " +
+            "AND (:roomTypeId IS NULL OR r.roomType.id = :roomTypeId)")  // Filtro opcional por tipo de habitación
+    Page<Room> findAvailableRoomsForDatesWithRoomType(
             LocalDateTime startDate,
             LocalDateTime endDate,
-            Specification<Room> spec,
+            @Param("roomTypeId") Long roomTypeId,  // Parámetro para tipo de habitación
             Pageable pageable);
 
 

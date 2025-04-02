@@ -17,8 +17,7 @@ public interface RoomService extends CrudGenericService<Room, RoomRequestDTO, Ro
     Page<RoomResponseDTO> findAvailableRoomsForDates(
             LocalDateTime startDate,
             LocalDateTime endDate,
-            String field,
-            String value,
+            Long roomTypeId,
             Pageable pageable);
 
     // Obtener una lista de reservas con fecha de inicio, fecha de fin y estado para una habitación

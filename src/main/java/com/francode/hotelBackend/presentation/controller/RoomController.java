@@ -72,13 +72,12 @@ public class RoomController {
     public ResponseEntity<Page<RoomResponseDTO>> findAvailableRoomsForDates(
             @RequestParam("startDate") LocalDateTime startDate,
             @RequestParam("endDate") LocalDateTime endDate,
-            @RequestParam(value = "field", required = false) String field,
-            @RequestParam(value = "value", required = false) String value,
+            @RequestParam(value = "roomTypeId", required = false) Long roomTypeId,  // Filtro opcional por tipo de habitación
             Pageable pageable) {
-        Page<RoomResponseDTO> availableRooms = roomService.findAvailableRoomsForDates(startDate, endDate, field, value, pageable);
-
+        Page<RoomResponseDTO> availableRooms = roomService.findAvailableRoomsForDates(startDate, endDate, roomTypeId, pageable);
         return ResponseEntity.ok(availableRooms);
     }
+
 
     // Obtener las reservas futuras de una habitación
     @PreAuthorize("hasRole('ROLE_ADMIN')")
