@@ -26,9 +26,9 @@ public interface JpaEmployeeRepository extends JpaRepository<Employee, Long>, Jp
     // Consulta para obtener las estadísticas de un empleado con limpiezas finalizadas, canceladas y promedio de duración
     @Query("SELECT e.id AS employeeId, " +
             " e.name AS employeeName, " +
-            " SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) AS completedCleanings, " +
-            " SUM(CASE WHEN c.status = 'CANCELADO' THEN 1 ELSE 0 END) AS canceledCleanings, " +
-            " AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) AS avgCleaningDuration " +
+            " COALESCE(SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END), 0) AS completedCleanings, " +
+            " COALESCE(SUM(CASE WHEN c.status = 'CANCELADO' THEN 1 ELSE 0 END), 0) AS canceledCleanings, " +
+            " COALESCE(AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END), 0) AS avgCleaningDuration " +
             "FROM Cleaning c " +
             "JOIN c.employee e " +
             "WHERE e.id = :employeeId " +
@@ -39,12 +39,14 @@ public interface JpaEmployeeRepository extends JpaRepository<Employee, Long>, Jp
     @Query("SELECT e.id AS employeeId, " +
             " e.name AS employeeName, " +
             " SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) AS completedCleanings, " +
+            " SUM(CASE WHEN c.status = 'CANCELADO' THEN 1 ELSE 0 END) AS canceledCleanings, " + // Agregado para contar las limpiezas canceladas
             " AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) AS avgCleaningDuration " +
             "FROM Cleaning c " +
             "JOIN c.employee e " +
             "GROUP BY e.id " +
-            "ORDER BY SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) DESC, " +  // Ordenar por la cantidad de limpiezas terminadas de mayor a menor
-            "AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) DESC") // Ordenar por la duración promedio de limpieza de mayor a menor
+            "ORDER BY SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) DESC, " +
+            "AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) DESC")
     List<Object[]> findTopOrBottomEmployees(Pageable pageable);
+
 
 }

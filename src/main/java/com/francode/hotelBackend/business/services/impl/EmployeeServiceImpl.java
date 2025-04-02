@@ -199,22 +199,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeStatisticsDTO findEmployeeStatistics(Long employeeId) {
+        // Llamada al repositorio para obtener las estadísticas de un único empleado
         Object[] result = employeeRepository.findEmployeeStatisticsById(employeeId);
-        if (result == null) {
-            throw new NotFoundException("Empleado no encontrado con ID: " + employeeId);
+
+        // Verificamos si el resultado está vacío o no tiene 5 elementos (ID, nombre, y 3 estadísticas)
+        if (result == null || result.length != 5) {
+            throw new NotFoundException("Empleado no encontrado o sin estadísticas con ID: " + employeeId);
         }
+
+        // Mapeo de los resultados al DTO correspondiente
         Long completedCleanings = (Long) result[2];
         Long canceledCleanings = (Long) result[3];
         Double avgCleaningDuration = (Double) result[4];
 
+        // Retornar el DTO con los valores obtenidos
         return new EmployeeStatisticsDTO(
-                (Long) result[0],
-                (String) result[1],
+                (Long) result[0],   // employeeId
+                (String) result[1], // employeeName
                 completedCleanings,
                 canceledCleanings,
                 avgCleaningDuration
         );
     }
+
 
     @Override
     public Page<EmployeeStatisticsDTO> findTopEmployees(Pageable pageable) {
@@ -227,12 +234,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                         (Long) result[0],  // employeeId
                         (String) result[1], // employeeName
                         (Long) result[2],   // completedCleanings
-                        null,               // No se especifica la propiedad aquí
-                        (Double) result[3]  // avgCleaningDuration
+                        (Long) result[3],   // canceledCleanings (mapeo correcto)
+                        (Double) result[4]  // avgCleaningDuration
                 ))
                 .collect(Collectors.toList());
 
         // Retorno de la lista paginada
         return new PageImpl<>(statisticsList, pageable, statisticsList.size());
     }
+
 }
