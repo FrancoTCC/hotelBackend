@@ -213,4 +213,16 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.updateRoomCleaningStatus(roomId, EStatusCleaningRoom.PARA_LIMPIAR);
         webSocketService.sendRoomStatusUpdate(roomId, EStatusCleaningRoom.PARA_LIMPIAR.name());
     }
+
+    @Override
+    public List<ReservationInfoDTO> findAllFutureReservationsInfo() {
+        List<Reservation> reservations = roomRepository.findAllFutureReservations();
+        if (reservations.isEmpty()) {
+            throw new NotFoundException("No se encontraron reservas futuras.");
+        }
+        return reservations.stream()
+                .map(reservation -> reservationMapper.toReservationInfoDTO(reservation))
+                .collect(Collectors.toList());
+    }
+
 }

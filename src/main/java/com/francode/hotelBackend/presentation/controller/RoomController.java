@@ -107,4 +107,12 @@ public class RoomController {
         roomService.updateRoomCleaningStatus(id);
         return ResponseEntity.ok().build();
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/room/reservations/future")
+    public ResponseEntity<List<ReservationInfoDTO>> getAllFutureReservations() {
+        List<ReservationInfoDTO> reservationsInfoDTOs = roomService.findAllFutureReservationsInfo();
+        return ResponseEntity.ok(reservationsInfoDTOs);
+    }
+
 }

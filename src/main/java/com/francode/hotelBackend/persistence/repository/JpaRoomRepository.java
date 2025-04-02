@@ -54,4 +54,8 @@ public interface JpaRoomRepository extends JpaRepository<Room, Long>, JpaSpecifi
     @Query("UPDATE Room r SET r.statusCleaning = :statusCleaning WHERE r.id = :roomId")
     void updateRoomCleaningStatus(Long roomId, EStatusCleaningRoom statusCleaning);
 
+    // Obtener todas las reservas futuras para todas las habitaciones
+    @Query("SELECT res FROM Reservation res WHERE res.startDate >= CURRENT_TIMESTAMP")
+    List<Reservation> findAllFutureReservations();
+
 }

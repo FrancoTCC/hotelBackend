@@ -24,4 +24,6 @@ public interface RoomService extends CrudGenericService<Room, RoomRequestDTO, Ro
 
     Page<RoomResponseDTO> findRoomsWithCleaningStatus(Pageable pageable);
     void updateRoomCleaningStatus(Long roomId);
+
+    List<ReservationInfoDTO> findAllFutureReservationsInfo();
 }

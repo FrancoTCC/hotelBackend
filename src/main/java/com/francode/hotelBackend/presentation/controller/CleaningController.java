@@ -4,6 +4,7 @@ import com.francode.hotelBackend.business.services.interfaces.CleaningService;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CreateCleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.UpdateCleaningStatusDTO;
+import com.francode.hotelBackend.presentation.dto.response.CleaningDetailsDTO;
 import com.francode.hotelBackend.presentation.dto.response.CleaningResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,14 @@ public class CleaningController {
             @PathVariable Long cleaningId, @Valid @RequestBody UpdateCleaningStatusDTO updateCleaningStatusDTO) {
         CleaningResponseDTO cleaningResponseDTO = cleaningService.updateCleaningStatus(cleaningId, updateCleaningStatusDTO);
         return ResponseEntity.ok(cleaningResponseDTO);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLEANER')")
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<CleaningDetailsDTO> getCleaningDetailsByRoomId(@PathVariable Long roomId) {
+        Optional<CleaningDetailsDTO> cleaningDetails = cleaningService.findCleaningDetailsByRoomId(roomId);
+        return cleaningDetails
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

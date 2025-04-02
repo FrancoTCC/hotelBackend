@@ -15,6 +15,7 @@ import com.francode.hotelBackend.persistence.repository.JpaEmployeeRepository;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CreateCleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.UpdateCleaningStatusDTO;
+import com.francode.hotelBackend.presentation.dto.response.CleaningDetailsDTO;
 import com.francode.hotelBackend.presentation.dto.response.CleaningResponseDTO;
 import jakarta.persistence.criteria.Path;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +176,6 @@ public class CleaningServiceImpl implements CleaningService {
         return cleanings.map(cleaningMapper::toResponseDTO);
     }
 
-
     @Override
     public CleaningResponseDTO updateCleaningStatus(Long cleaningId, UpdateCleaningStatusDTO updateCleaningStatusDTO) {
         if (updateCleaningStatusDTO == null || updateCleaningStatusDTO.getStatus() == null) {
@@ -208,5 +208,14 @@ public class CleaningServiceImpl implements CleaningService {
         webSocketService.sendRoomStatusUpdate(cleaning.getRoom().getId(), cleaning.getRoom().getStatusCleaning().name());
 
         return cleaningMapper.toResponseDTO(cleaning);
+    }
+
+    @Override
+    public Optional<CleaningDetailsDTO> findCleaningDetailsByRoomId(Long roomId) {
+        Optional<CleaningDetailsDTO> cleaningDetailsDTO = cleaningRepository.findCleaningByRoomAndInProcessStatus(roomId);
+
+        return cleaningDetailsDTO.or(() -> {
+            throw new NotFoundException("No se encontró ninguna limpieza en estado 'EN PROCESO' para la habitación con ID: " + roomId);
+        });
     }
 }

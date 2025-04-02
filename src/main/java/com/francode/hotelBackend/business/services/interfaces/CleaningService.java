@@ -5,6 +5,7 @@ import com.francode.hotelBackend.domain.entity.Cleaning;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.CreateCleaningRequestDTO;
 import com.francode.hotelBackend.presentation.dto.request.cleaning.UpdateCleaningStatusDTO;
+import com.francode.hotelBackend.presentation.dto.response.CleaningDetailsDTO;
 import com.francode.hotelBackend.presentation.dto.response.CleaningResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,6 @@ public interface CleaningService {
     CleaningResponseDTO updateCleaningStatus(Long cleaningId, UpdateCleaningStatusDTO updateCleaningStatus);
 
     Page<CleaningResponseDTO> getCleaningsByEmployeeId(Long employeeId, String field, String value, Pageable pageable);
+
+    Optional<CleaningDetailsDTO> findCleaningDetailsByRoomId(Long roomId);
 }

@@ -3,6 +3,7 @@ package com.francode.hotelBackend.business.services.impl;
 import com.francode.hotelBackend.business.mapper.EmployeeMapper;
 import com.francode.hotelBackend.business.services.interfaces.EmployeeService;
 import com.francode.hotelBackend.domain.entity.Company;
+import com.francode.hotelBackend.domain.entity.ERole;
 import com.francode.hotelBackend.domain.entity.Employee;
 import com.francode.hotelBackend.domain.entity.UserApp;
 import com.francode.hotelBackend.exceptions.custom.NoRecordsException;
@@ -13,14 +14,19 @@ import com.francode.hotelBackend.persistence.repository.JpaEmployeeRepository;
 import com.francode.hotelBackend.persistence.repository.JpaUserRepository;
 import com.francode.hotelBackend.presentation.dto.request.EmployeeRequestDTO;
 import com.francode.hotelBackend.presentation.dto.response.EmployeeResponseDTO;
+import com.francode.hotelBackend.presentation.dto.response.EmployeeStatisticsDTO;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -161,5 +167,68 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .or(() -> {
                     throw new NotFoundException("No se encontró un empleado asociado al usuario con ID: " + userId);
                 });
+    }
+
+    @Override
+    public Page<EmployeeResponseDTO> findByRole(ERole role, String field, String value, Pageable pageable) {
+        if ((field != null && value == null) || (field == null && value != null)) {
+            throw new ValidationException("Ambos, campo y valor, deben proporcionarse para la búsqueda.");
+        }
+
+        Specification<Employee> spec = Specification.where(null);
+
+        spec = spec.and((root, query, criteriaBuilder) -> {
+            Predicate rolePredicate = criteriaBuilder.isMember(role, root.join("userApp").join("roles"));
+            return rolePredicate;
+        });
+
+        if (field != null && value != null && !field.isEmpty() && !value.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> {
+                Path<String> fieldPath = root.get(field);
+                return criteriaBuilder.like(criteriaBuilder.lower(fieldPath), "%" + value.toLowerCase() + "%");
+            });
+        }
+
+        Page<Employee> employees = employeeRepository.findAll(spec, pageable);
+
+        if (employees.isEmpty()) {
+            throw new NoRecordsException("No se encontraron empleados con el rol: " + role.name());
+        }
+        return employees.map(employeeMapper::toResponseDTO);
+    }
+
+    @Override
+    public EmployeeStatisticsDTO findEmployeeStatistics(Long employeeId) {
+        Object[] result = employeeRepository.findEmployeeStatisticsById(employeeId);
+        if (result == null) {
+            throw new NotFoundException("Empleado no encontrado con ID: " + employeeId);
+        }
+        Long completedCleanings = (Long) result[2];
+        Long canceledCleanings = (Long) result[3];
+        Double avgCleaningDuration = (Double) result[4];
+
+        return new EmployeeStatisticsDTO(
+                (Long) result[0],
+                (String) result[1],
+                completedCleanings,
+                canceledCleanings,
+                avgCleaningDuration
+        );
+    }
+
+    @Override
+    public Page<EmployeeStatisticsDTO> findTopEmployees(String sortOrder, Pageable pageable) {
+        List<Object[]> results = employeeRepository.findTopOrBottomEmployees(sortOrder, pageable);
+        List<EmployeeStatisticsDTO> statisticsList = results.stream()
+                .map(result -> new EmployeeStatisticsDTO(
+                        (Long) result[0],
+                        (String) result[1],
+                        (Long) result[2],
+                        null,
+                        (Double) result[3]
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(statisticsList, pageable, statisticsList.size());
     }
 }
