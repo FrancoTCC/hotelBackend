@@ -43,13 +43,8 @@ public interface JpaEmployeeRepository extends JpaRepository<Employee, Long>, Jp
             "FROM Cleaning c " +
             "JOIN c.employee e " +
             "GROUP BY e.id " +
-            "ORDER BY " +
-            "   SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) " +
-            "   " + ":sortOrder, " +
-            "   AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) " +
-            "   " + ":sortOrder")
-    List<Object[]> findTopOrBottomEmployees(
-            @Param("sortOrder") String sortOrder,
-            Pageable pageable);
+            "ORDER BY SUM(CASE WHEN c.status = 'TERMINADO' THEN 1 ELSE 0 END) DESC, " +  // Ordenar por la cantidad de limpiezas terminadas de mayor a menor
+            "AVG(CASE WHEN c.endDate IS NOT NULL THEN TIMESTAMPDIFF(SECOND, c.startDate, c.endDate) ELSE 0 END) DESC") // Ordenar por la duración promedio de limpieza de mayor a menor
+    List<Object[]> findTopOrBottomEmployees(Pageable pageable);
 
 }

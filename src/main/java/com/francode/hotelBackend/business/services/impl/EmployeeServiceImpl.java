@@ -217,18 +217,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Page<EmployeeStatisticsDTO> findTopEmployees(String sortOrder, Pageable pageable) {
-        List<Object[]> results = employeeRepository.findTopOrBottomEmployees(sortOrder, pageable);
+    public Page<EmployeeStatisticsDTO> findTopEmployees(Pageable pageable) {
+        // Llamada al repositorio sin el parámetro sortOrder
+        List<Object[]> results = employeeRepository.findTopOrBottomEmployees(pageable);
+
+        // Mapeo de los resultados a la lista de DTOs
         List<EmployeeStatisticsDTO> statisticsList = results.stream()
                 .map(result -> new EmployeeStatisticsDTO(
-                        (Long) result[0],
-                        (String) result[1],
-                        (Long) result[2],
-                        null,
-                        (Double) result[3]
+                        (Long) result[0],  // employeeId
+                        (String) result[1], // employeeName
+                        (Long) result[2],   // completedCleanings
+                        null,               // No se especifica la propiedad aquí
+                        (Double) result[3]  // avgCleaningDuration
                 ))
                 .collect(Collectors.toList());
 
+        // Retorno de la lista paginada
         return new PageImpl<>(statisticsList, pageable, statisticsList.size());
     }
 }

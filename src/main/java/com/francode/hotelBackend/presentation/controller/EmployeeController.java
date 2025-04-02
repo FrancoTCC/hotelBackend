@@ -100,11 +100,9 @@ public class EmployeeController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/top")
-    public ResponseEntity<Page<EmployeeStatisticsDTO>> findTopEmployees(
-            @RequestParam String sortOrder,   // 'ASC' o 'DESC'
-            Pageable pageable) {
-
-        Page<EmployeeStatisticsDTO> employeeStatisticsDTOs = employeeService.findTopEmployees(sortOrder, pageable);
+    public ResponseEntity<Page<EmployeeStatisticsDTO>> findTopEmployees(Pageable pageable) {
+        Page<EmployeeStatisticsDTO> employeeStatisticsDTOs = employeeService.findTopEmployees(pageable);
         return ResponseEntity.ok(employeeStatisticsDTOs);
     }
+
 }

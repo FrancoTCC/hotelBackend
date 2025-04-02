@@ -17,5 +17,5 @@ public interface EmployeeService extends CrudGenericService<Employee, EmployeeRe
     Optional<EmployeeResponseDTO> findByUserAppId(Long userId);
     Page<EmployeeResponseDTO> findByRole(ERole role, String field, String value, Pageable pageable);
     EmployeeStatisticsDTO findEmployeeStatistics(Long employeeId);
-    Page<EmployeeStatisticsDTO> findTopEmployees(String sortOrder, Pageable pageable);
+    Page<EmployeeStatisticsDTO> findTopEmployees(Pageable pageable);
 }
