@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -212,10 +213,24 @@ public class CleaningServiceImpl implements CleaningService {
 
     @Override
     public Optional<CleaningDetailsDTO> findCleaningDetailsByRoomId(Long roomId) {
-        Optional<CleaningDetailsDTO> cleaningDetailsDTO = cleaningRepository.findCleaningByRoomAndInProcessStatus(roomId);
+        List<Object[]> results = cleaningRepository.findCleaningByRoomAndInProcessStatus(roomId);
 
-        return cleaningDetailsDTO.or(() -> {
+        if (results.isEmpty()) {
             throw new NotFoundException("No se encontró ninguna limpieza en estado 'EN PROCESO' para la habitación con ID: " + roomId);
-        });
+        }
+
+        // Si encuentras resultados, mapea el primer resultado al DTO
+        Object[] row = results.get(0); // Obtiene el primer resultado de la lista
+        Long cleaningId = (Long) row[0];
+        LocalDateTime startDate = (LocalDateTime) row[1];
+        String status = (String) row[2];
+        Long employeeId = (Long) row[3];
+        String employeeName = (String) row[4];
+
+        // Mapea los valores al DTO
+        CleaningDetailsDTO cleaningDetailsDTO = new CleaningDetailsDTO(cleaningId, startDate, status, employeeId, employeeName);
+
+        return Optional.of(cleaningDetailsDTO);
     }
+
 }

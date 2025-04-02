@@ -8,18 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface JpaCleaningRepository extends JpaRepository<Cleaning, Long>, JpaSpecificationExecutor<Cleaning> {
     Page<Cleaning> findByEmployeeId(Long employeeId, Pageable pageable);
 
-    @Query("SELECT new com.francode.hotelBackend.presentation.dto.response.CleaningDetailsDTO(" +
-            "c.id, " +
-            "c.startDate, " +
-            "c.status, " +
-            "c.employee.id, " +
-            "c.employee.name) " +
+    @Query("SELECT c.id, c.startDate, c.status, c.employee.id, c.employee.name " +
             "FROM Cleaning c " +
             "WHERE c.room.id = :roomId AND c.status = 'EN_PROCESO'")
-    Optional<CleaningDetailsDTO> findCleaningByRoomAndInProcessStatus(Long roomId);
+    List<Object[]> findCleaningByRoomAndInProcessStatus(Long roomId);
+
 }
