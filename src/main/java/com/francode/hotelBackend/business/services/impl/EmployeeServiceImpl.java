@@ -17,6 +17,8 @@ import com.francode.hotelBackend.presentation.dto.response.EmployeeResponseDTO;
 import com.francode.hotelBackend.presentation.dto.response.EmployeeStatisticsDTO;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+import org.hibernate.validator.internal.properties.Field;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -170,26 +172,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Page<EmployeeResponseDTO> findByRole(ERole role, String field, String value, Pageable pageable) {
-        if ((field != null && value == null) || (field == null && value != null)) {
-            throw new ValidationException("Ambos, campo y valor, deben proporcionarse para la búsqueda.");
-        }
-
-        Specification<Employee> spec = Specification.where(null);
-
-        spec = spec.and((root, query, criteriaBuilder) -> {
-            Predicate rolePredicate = criteriaBuilder.isMember(role, root.join("userApp").join("roles"));
-            return rolePredicate;
-        });
-
-        if (field != null && value != null && !field.isEmpty() && !value.isEmpty()) {
-            spec = spec.and((root, query, criteriaBuilder) -> {
-                Path<String> fieldPath = root.get(field);
-                return criteriaBuilder.like(criteriaBuilder.lower(fieldPath), "%" + value.toLowerCase() + "%");
-            });
-        }
-
-        Page<Employee> employees = employeeRepository.findAll(spec, pageable);
+    public Page<EmployeeResponseDTO> findByRole(ERole role, Pageable pageable) {
+        Page<Employee> employees = employeeRepository.findByRole(role, pageable);
 
         if (employees.isEmpty()) {
             throw new NoRecordsException("No se encontraron empleados con el rol: " + role.name());

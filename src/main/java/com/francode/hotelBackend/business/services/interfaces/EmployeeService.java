@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface EmployeeService extends CrudGenericService<Employee, EmployeeRequestDTO, EmployeeResponseDTO, Long> {
     Optional<EmployeeResponseDTO> findByDocumentNumber(String documentNumber);
     Optional<EmployeeResponseDTO> findByUserAppId(Long userId);
-    Page<EmployeeResponseDTO> findByRole(ERole role, String field, String value, Pageable pageable);
+    Page<EmployeeResponseDTO> findByRole(ERole role, Pageable pageable);
     EmployeeStatisticsDTO findEmployeeStatistics(Long employeeId);
     Page<EmployeeStatisticsDTO> findTopEmployees(Pageable pageable);
 }

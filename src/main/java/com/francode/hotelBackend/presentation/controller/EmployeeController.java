@@ -83,11 +83,8 @@ public class EmployeeController {
     @GetMapping("/employees/role")
     public ResponseEntity<Page<EmployeeResponseDTO>> findByRole(
             @RequestParam ERole role,
-            @RequestParam(required = false) String field,
-            @RequestParam(required = false) String value,
             Pageable pageable) {
-
-        Page<EmployeeResponseDTO> employeeResponseDTOs = employeeService.findByRole(role, field, value, pageable);
+        Page<EmployeeResponseDTO> employeeResponseDTOs = employeeService.findByRole(role, pageable);
         return ResponseEntity.ok(employeeResponseDTOs);
     }
 
